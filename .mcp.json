@@ -72,6 +72,10 @@
         "OPENAI_API_TIMEOUT": "30000",
         "OPENAI_MAX_RETRIES": "1"
       }
+    },
+    "angular-cli": {
+      "command": "npx",
+      "args": ["-y", "@angular/cli", "mcp"]
     }
   }
 }
