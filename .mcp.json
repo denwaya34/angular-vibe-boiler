@@ -1,0 +1,77 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["@upstash/context7-mcp@latest"],
+      "env": {}
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["@playwright/mcp@latest"]
+    },
+    "motion": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["motion-ai@latest"]
+    },
+    "serena": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--context",
+        "ide-assistant",
+        "--enable-web-dashboard",
+        "false"
+      ],
+      "env": {}
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    },
+    "github": {
+      "command": "bunx",
+      "args": ["@modelcontextprotocol/server-github"]
+    },
+    "ultracite": {
+      "command": "bunx",
+      "args": ["mcp-remote", "https://www.ultracite.ai/api/mcp/mcp"]
+    },
+    "codex": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": [
+        "codex",
+        "mcp",
+        "-c",
+        "search=true",
+        "-c",
+        "model='gpt-5'",
+        "-c",
+        "model_reasoning_effort='high'"
+      ],
+      "env": {}
+    },
+    "sequential-thinking": {
+      "command": "bunx",
+      "args": ["@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "o3-search": {
+      "command": "bunx",
+      "args": ["o3-search-mcp"],
+      "env": {
+        "OPENAI_MODEL": "gpt-5-mini",
+        "SEARCH_CONTEXT_SIZE": "medium",
+        "REASONING_EFFORT": "medium",
+        "OPENAI_API_TIMEOUT": "30000",
+        "OPENAI_MAX_RETRIES": "1"
+      }
+    }
+  }
+}
