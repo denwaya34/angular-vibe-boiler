@@ -7,6 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Angular Detail: @docs/angular.md
 - DaisyUI: docs/daisyui.md
 
+## 制約事項
+
+- codex mcp を用いて、深く徹底的に思考してください。
+- Angularに関する実装時は angular-cli mcp を用いて、angularのベストプラクティスと最新仕様に基づいて実装してください。
+
 ## Essential Commands
 
 ### Development & Testing
