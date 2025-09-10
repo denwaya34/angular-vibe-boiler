@@ -1,7 +1,436 @@
-<main class="main">
+<!-- スクロール進捗バー -->
+<div class="fixed top-0 left-0 right-0 z-50 h-1 bg-base-200">
+  <div 
+    class="h-full bg-gradient-to-r from-primary via-secondary to-accent transition-all duration-300"
+    [style.width.%]="scrollProgress()"
+  ></div>
+</div>
 
+<!-- ヘッダー -->
+<header class="navbar sticky top-1 z-40 bg-base-100/90 backdrop-blur-md border-b border-base-200">
+  <div class="navbar-start">
+    <div class="dropdown">
+      <button type="button" tabindex="0" class="btn btn-ghost btn-circle lg:hidden" aria-label="メニュー">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-base-100 rounded-box w-52">
+        @for (phase of scrumData().phases; track $index) {
+          <li><button type="button" (click)="navigateToSection($index)" class="btn btn-ghost btn-sm">{{ phase.title }}</button></li>
+        }
+      </ul>
+    </div>
+    <a class="btn btn-ghost text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+      スクラム分析
+    </a>
+  </div>
+  
+  <div class="navbar-center hidden lg:flex">
+    <ul class="menu menu-horizontal px-1">
+      @for (phase of scrumData().phases; track $index) {
+        <li>
+          <button 
+            type="button"
+            (click)="navigateToSection($index)"
+            [class.active]="activeSection() === $index"
+            class="btn btn-ghost transition-all hover:scale-105"
+          >
+            {{ phase.title }}
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+  
+  <div class="navbar-end">
+    <button (click)="toggleTheme()" class="btn btn-ghost btn-circle">
+      @if (isDarkMode()) {
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      } @else {
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      }
+    </button>
+  </div>
+</header>
+
+<!-- メインコンテンツ -->
+<main class="min-h-screen bg-gradient-to-br from-base-100 via-base-200 to-base-300">
+  
+  <!-- ヒーローセクション -->
+  <section class="hero min-h-[60vh] relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20"></div>
+    @if (isDarkMode()) {
+      <div class="absolute inset-0 lightning-dark"></div>
+    }
+    <div class="hero-content text-center relative z-10">
+      <div class="max-w-4xl">
+        <h1 class="text-5xl md:text-7xl font-bold mb-8 animate-fade-in">
+          <span class="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            {{ title() }}
+          </span>
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 opacity-90">
+          アジャイルプロジェクトの47%が失敗する理由とその解決策
+        </p>
+        
+        <!-- キーメトリクス（Enhanced Bento Grid） -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+          @for (insight of scrumData().keyInsights; track insight.id; let i = $index) {
+            <button 
+              type="button"
+              class="card glass shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer text-left w-full group"
+              [class.border-error]="insight.color === 'error'"
+              [class.border-warning]="insight.color === 'warning'"
+              [class.border-success]="insight.color === 'success'"
+              [class.border-primary]="insight.color === 'primary'"
+              [class.border-2]="true"
+              [class.col-span-2]="i === 0"
+              [class.bento-large]="i === 0"
+              (click)="toggleSection(insight.id)"
+              [attr.aria-expanded]="showDetails()[insight.id]"
+              [attr.aria-label]="insight.title"
+            >
+              <div class="card-body p-4 relative overflow-hidden">
+                <!-- Background Pattern -->
+                <div class="absolute inset-0 opacity-5">
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary to-secondary rounded-full transform translate-x-16 -translate-y-16"></div>
+                </div>
+                
+                <!-- Content -->
+                <div class="relative z-10">
+                  <div class="text-4xl mb-3 animate-float">{{ insight.icon }}</div>
+                  <div class="stat-value text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    {{ insight.value }}
+                  </div>
+                  <div class="stat-title text-base-content/70 font-medium">{{ insight.label }}</div>
+                  
+                  <!-- Progress Indicator -->
+                  @if (insight.color === 'error') {
+                    <progress class="progress progress-error mt-2 h-1" [value]="47" max="100"></progress>
+                  } @else if (insight.color === 'warning') {
+                    <progress class="progress progress-warning mt-2 h-1" [value]="92" max="100"></progress>
+                  } @else if (insight.color === 'success') {
+                    <progress class="progress progress-success mt-2 h-1" [value]="55" max="100"></progress>
+                  } @else {
+                    <progress class="progress progress-primary mt-2 h-1" [value]="75" max="100"></progress>
+                  }
+                  
+                  @if (showDetails()[insight.id]) {
+                    <div class="text-sm mt-3 animate-fade-in space-y-2">
+                      <p class="text-base-content/80">{{ insight.description }}</p>
+                      <div class="flex items-center gap-2 text-xs">
+                        <span class="badge badge-sm badge-outline">詳細分析</span>
+                        <span class="text-base-content/60">クリックで閉じる</span>
+                      </div>
+                    </div>
+                  } @else {
+                    <div class="text-xs mt-2 text-base-content/60 group-hover:text-base-content/80 transition-colors">
+                      詳細を見る →
+                    </div>
+                  }
+                </div>
+              </div>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- 経験主義の3本柱セクション -->
+  <section class="py-20 px-4">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-4xl font-bold text-center mb-12">
+        <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          スクラムの経験主義
+        </span>
+      </h2>
+      
+      <div class="grid md:grid-cols-3 gap-6">
+        @for (principle of scrumData().principles; track principle.name) {
+          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+            <div class="card-body">
+              <h3 class="card-title text-2xl mb-4">{{ principle.name }}</h3>
+              <div class="relative h-40 mb-4">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div 
+                    class="radial-progress text-primary transition-all duration-1000 group-hover:scale-110"
+                    [style.--value]="principle.value"
+                    [style.--size]="'8rem'"
+                  >
+                    {{ principle.value }}%
+                  </div>
+                </div>
+              </div>
+              <p class="text-base-content/70">{{ principle.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+  
+  <!-- 実装フェーズセクション（Bento Grid Layout） -->
+  <section class="py-20 px-4 bg-base-200/50">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-4xl font-bold text-center mb-12">
+        <span class="bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
+          段階的導入戦略
+        </span>
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (phase of scrumData().phases; track phase.title; let i = $index) {
+          <div 
+            [id]="'section-' + i"
+            class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+            [class.col-span-2]="i === 0"
+            [class.row-span-2]="i === 0"
+          >
+            <div class="card-body">
+              <div class="badge badge-primary badge-lg mb-2">{{ phase.duration }}</div>
+              <h3 class="card-title text-2xl mb-4">{{ phase.title }}</h3>
+              <ul class="space-y-2">
+                @for (item of phase.items; track item) {
+                  <li class="flex items-start">
+                    <svg class="w-5 h-5 text-success mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="text-base-content/80">{{ item }}</span>
+                  </li>
+                }
+              </ul>
+              @if (i === activeSection()) {
+                <div class="mt-4 p-4 bg-primary/10 rounded-lg animate-pulse">
+                  <span class="text-sm font-semibold">現在のフェーズ</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+  
+  <!-- データビジュアライゼーションセクション -->
+  <section class="py-20 px-4 bg-gradient-to-br from-base-100 to-base-200">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-4xl font-bold text-center mb-12">
+        <span class="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent gradient-text-animated">
+          データ分析による洞察
+        </span>
+      </h2>
+      
+      <!-- Chart Grid -->
+      <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <!-- 失敗要因分析チャート -->
+        <div class="card glass shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title text-xl mb-4">失敗要因の内訳</h3>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-sm">組織文化の不整合</span>
+                <div class="flex items-center gap-2">
+                  <progress class="progress progress-error w-32" value="75" max="100"></progress>
+                  <span class="text-sm font-bold">75%</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm">権限委任の不足</span>
+                <div class="flex items-center gap-2">
+                  <progress class="progress progress-warning w-32" value="60" max="100"></progress>
+                  <span class="text-sm font-bold">60%</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm">実験文化の欠如</span>
+                <div class="flex items-center gap-2">
+                  <progress class="progress progress-warning w-32" value="55" max="100"></progress>
+                  <span class="text-sm font-bold">55%</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm">技術的負債</span>
+                <div class="flex items-center gap-2">
+                  <progress class="progress progress-info w-32" value="40" max="100"></progress>
+                  <span class="text-sm font-bold">40%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- AI導入効果チャート -->
+        <div class="card glass shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title text-xl mb-4">AI導入による改善効果</h3>
+            <div class="flex justify-center items-center h-48">
+              <div class="relative">
+                <div class="radial-progress text-success text-4xl" style="--value:55; --size:10rem;">
+                  +55%
+                </div>
+                <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-center">
+                  <div class="text-base-content/70">生産性向上</div>
+                  <div class="text-xs text-base-content/50">2024年実績</div>
+                </div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <div class="text-lg font-bold text-info">30%</div>
+                <div class="text-xs">コード生成</div>
+              </div>
+              <div>
+                <div class="text-lg font-bold text-success">45%</div>
+                <div class="text-xs">レビュー短縮</div>
+              </div>
+              <div>
+                <div class="text-lg font-bold text-warning">25%</div>
+                <div class="text-xs">バグ削減</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Timeline Visualization -->
+      <div class="card glass shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title text-xl mb-6">段階的導入のタイムライン</h3>
+          <div class="relative">
+            <!-- Timeline Line -->
+            <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-secondary to-accent"></div>
+            
+            <!-- Timeline Items -->
+            <div class="space-y-8">
+              @for (phase of scrumData().phases; track phase.title; let i = $index) {
+                <div class="flex items-start gap-4 group">
+                  <!-- Timeline Dot -->
+                  <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-full bg-base-100 border-4 flex items-center justify-center shadow-lg transition-all group-hover:scale-110"
+                         [class.border-primary]="i === 0"
+                         [class.border-secondary]="i === 1"
+                         [class.border-accent]="i === 2">
+                      <span class="text-2xl font-bold">{{ i + 1 }}</span>
+                    </div>
+                    @if (i === activeSection()) {
+                      <div class="absolute inset-0 rounded-full animate-ping"
+                           [class.bg-primary]="i === 0"
+                           [class.bg-secondary]="i === 1"
+                           [class.bg-accent]="i === 2"
+                           style="opacity: 0.3;"></div>
+                    }
+                  </div>
+                  
+                  <!-- Timeline Content -->
+                  <div class="flex-1 pb-8">
+                    <div class="badge badge-lg mb-2"
+                         [class.badge-primary]="i === 0"
+                         [class.badge-secondary]="i === 1"
+                         [class.badge-accent]="i === 2">
+                      {{ phase.duration }}
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">{{ phase.title }}</h4>
+                    <div class="flex flex-wrap gap-2">
+                      @for (item of phase.items; track item) {
+                        <span class="badge badge-outline badge-sm">{{ item }}</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- インサイトセクション -->
+  <section class="py-20 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-4xl font-bold mb-8">
+        <span class="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+          本質的な洞察
+        </span>
+      </h2>
+      
+      <div class="mockup-code bg-base-300 text-left mb-8">
+        <pre data-prefix=">" class="text-warning"><code>スクラムの失敗は、フレームワークの問題ではない</code></pre>
+        <pre data-prefix=">" class="text-success"><code>組織OSとアプリケーションの不整合が原因</code></pre>
+        <pre data-prefix=">" class="text-info"><code>「完璧な計画より、不完全な実験を」</code></pre>
+      </div>
+      
+      <div class="stats shadow-xl bg-base-100/80 backdrop-blur-sm">
+        <div class="stat">
+          <div class="stat-figure text-error">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="stat-title">失敗率</div>
+          <div class="stat-value text-error">{{ scrumData().failureRate }}%</div>
+          <div class="stat-desc">アジャイルプロジェクト</div>
+        </div>
+        
+        <div class="stat">
+          <div class="stat-figure text-warning">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+            </svg>
+          </div>
+          <div class="stat-title">日本UAI</div>
+          <div class="stat-value text-warning">{{ scrumData().japanUAI }}</div>
+          <div class="stat-desc">不確実性回避指数</div>
+        </div>
+        
+        <div class="stat">
+          <div class="stat-figure text-success">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div class="stat-title">AI効果</div>
+          <div class="stat-value text-success">+{{ scrumData().productivityGain }}%</div>
+          <div class="stat-desc">生産性向上</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- CTA セクション -->
+  <section class="py-20 px-4 bg-gradient-to-r from-primary/20 to-secondary/20">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-6">実装を始める準備はできましたか？</h2>
+      <p class="text-xl mb-8 opacity-90">
+        小さく始めて、学習し、適応する。それがスクラムの本質です。
+      </p>
+      <div class="flex gap-4 justify-center flex-wrap">
+        <button class="btn btn-primary btn-lg hover:scale-105 transition-transform">
+          導入ガイドを見る
+        </button>
+        <button class="btn btn-outline btn-lg hover:scale-105 transition-transform">
+          詳細レポートを読む
+        </button>
+      </div>
+    </div>
+  </section>
 </main>
 
-
+<!-- フッター -->
+<footer class="footer footer-center p-10 bg-base-200 text-base-content">
+  <div>
+    <p class="font-bold">
+      スクラム開発の本質的分析レポート
+    </p>
+    <p>Copyright © 2025 - 忖度なき真実に基づく</p>
+  </div>
+</footer>
 
 <router-outlet />
