@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Ref Docs
 
 - Angular Detail: @docs/angular.md
-- DaisyUI: @docs/daisyui.md
+- DaisyUI: docs/daisyui.md
 
 ## Essential Commands
 
