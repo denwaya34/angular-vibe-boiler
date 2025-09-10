@@ -76,6 +76,11 @@
     "angular-cli": {
       "command": "bunx",
       "args": ["@angular/cli@latest", "mcp"]
+    },
+    "ESLint": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["@eslint/mcp@latest"]
     }
   }
 }
