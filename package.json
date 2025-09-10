@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "sw": "pnpm dlx stagewise@latest"
+    "sw": "pnpm dlx stagewise@latest",
+    "dev": "run-p start sw"
   },
   "prettier": {
     "printWidth": 100,
