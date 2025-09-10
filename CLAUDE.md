@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Ref Docs
+
+- Angular Detail: @docs/angular.md
+- DaisyUI: @docs/daisyui.md
+
 ## Essential Commands
 
 ### Development & Testing
