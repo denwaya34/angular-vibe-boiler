@@ -39,10 +39,6 @@
       "command": "bunx",
       "args": ["@modelcontextprotocol/server-github"]
     },
-    "ultracite": {
-      "command": "bunx",
-      "args": ["mcp-remote", "https://www.ultracite.ai/api/mcp/mcp"]
-    },
     "codex": {
       "type": "stdio",
       "command": "bunx",
